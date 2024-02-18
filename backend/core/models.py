@@ -24,7 +24,9 @@ def student_image_file_path(instance, filename):
 class UserManager(BaseUserManager):
     """Manager for users"""
 
-    def create_user(self, email='test@example.com', password='test', **extra_fields):
+    def create_user(
+            self, email='test@example.com', password='test', **extra_fields
+    ):
         """Create, save and return a new user"""
         if not email:
             raise ValueError('User must have an email address')
