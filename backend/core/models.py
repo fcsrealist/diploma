@@ -18,7 +18,7 @@ def student_image_file_path(instance, filename):
     ext = os.path.splitext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads', 'recipe', filename)
+    return os.path.join('uploads', 'students', filename)
 
 
 class UserManager(BaseUserManager):
@@ -69,8 +69,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Student(models.Model):
+    """Student object"""
+    name = models.CharField(max_length=255)
+    photo = models.ImageField(null=True, upload_to=student_image_file_path)
+
+    def __str__(self):
+        return self.name
+
+
 class Course(models.Model):
     """Course object"""
+
     class StatusType(models.IntegerChoices):
         """Transaction choices"""
         ACTIVE = 1
@@ -78,21 +88,12 @@ class Course(models.Model):
 
     name = models.CharField(max_length=255)
     status = models.SmallIntegerField(choices=StatusType.choices)
+    students = models.ManyToManyField(Student)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True
     )
-
-    def __str__(self):
-        return self.name
-
-
-class Student(models.Model):
-    """Student object"""
-    name = models.CharField(max_length=255)
-    photo = models.ImageField(null=True, upload_to=student_image_file_path)
-    courses = models.ManyToManyField(Course)
 
     def __str__(self):
         return self.name
