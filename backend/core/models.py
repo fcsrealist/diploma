@@ -82,7 +82,7 @@ class Course(models.Model):
     """Course object"""
 
     class StatusType(models.IntegerChoices):
-        """Transaction choices"""
+        """Status choices"""
         ACTIVE = 1
         INACTIVE = 2
 
@@ -97,3 +97,28 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Attendance(models.Model):
+    """Attendance object"""
+
+    class StatusType(models.IntegerChoices):
+        """Status choices"""
+        ATTENDED = 1
+        ABSENT = 2
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        null=True
+    )
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        null=True
+    )
+    status = models.SmallIntegerField(choices=StatusType.choices)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.course.name + ' ' + self.student.name

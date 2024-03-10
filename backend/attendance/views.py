@@ -10,12 +10,12 @@ from attendance import serializers
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    """View for manage recipe APIs"""
+    """View for manage course APIs"""
     serializer_class = serializers.CourseSerializer
     queryset = Course.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """Create a new recipe"""
+        """Create a new course"""
         serializer.save(user=self.request.user)
