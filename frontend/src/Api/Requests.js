@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { apiEndPoint } from '../Config/api.js';
 
-const instance = (token) => {
+const instance = () => {
   return axios.create({
     baseURL: apiEndPoint,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Token ${localStorage.getItem('token')}`,
     },
   });
 };
@@ -20,46 +20,46 @@ export const authAPI = {
   createToken(body) {
     return instance()
       .post(`/user/token`, body)
-      .then((response) => response);
+      .then((response) => response.data);
   },
 };
 
 export const authorizedUserAPI = {
-	updateUser(body, token) {
-		return instance(token)
+	updateUser(body, ) {
+		return instance()
 			.put(`/user/me`, body)
 			.then((response) => response);
 	},
-	retrieveUser(token) {
-		return instance(token)
+	retrieveUser() {
+		return instance()
 			.get(`/user/me`)
-			.then((response) => response)
+			.then((response) => response.data)
 	}
 }
 
 export const authorizedAttendanceAPI = {
-	listCourses(token) {
-		return instance(token)
+	listCourses() {
+		return instance()
 			.get(`/attendance/courses/`)
 			.then((response) => response);
 	},
-	createCourse(body, token) {
-		return instance(token)
+	createCourse(body) {
+		return instance()
 			.post(`/attendance/courses/`, body)
 			.then((response) => response);
 	},
-	updateCourse(body, token) {
-		return instance(token)
+	updateCourse(body) {
+		return instance()
 			.put(`/attendance/courses/`, body)
 			.then((response) => response);
 	},
-	retrieveCourse(courseId, token) {
-		return instance(token)
+	retrieveCourse(courseId, ) {
+		return instance()
 			.get(`/attendance/courses` + courseId)
 			.then((response) => response);
 	},
-	deleteCourse(courseId, token) {
-		return instance(token)
+	deleteCourse(courseId, ) {
+		return instance()
 			.delete(`/attendance/courses` + courseId)
 			.then((response) => response);
 	}

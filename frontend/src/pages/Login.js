@@ -1,7 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {authAPI, authorizedUserAPI} from "../Api/Requests";
 
 function Login() {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const history = useNavigate();
+
+	async function login(e) {
+		e.preventDefault();
+		const body = {email, password};
+
+		if (email && password) {
+			try {
+				let token  = await authAPI.createToken(body)
+				localStorage.setItem('token', token.token)
+
+				let userData = await authorizedUserAPI.retrieveUser(token.token);
+				localStorage.setItem('user', JSON.stringify(userData))
+				history('/')
+			} catch (error) {
+				alert('Email or Password is invalid');
+			}
+		} else {
+			alert("You should fill all the fields!")
+		}
+	}
+
 	return (
 		<>
 			<div className="relative p-1">
@@ -41,7 +66,7 @@ function Login() {
 																name="email"
 																type="email"
 																autocomplete="email"
-																// onChange={(e) => setEmail(e.target.value)}
+																onChange={(e) => setEmail(e.target.value)}
 																required
 																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm"
 															/>
@@ -61,7 +86,7 @@ function Login() {
 																name="password"
 																type="password"
 																autocomplete="current-password"
-																// onChange={(e) => setPassword(e.target.value)}
+																onChange={(e) => setPassword(e.target.value)}
 																required
 																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-cyan-500 sm:text-sm"
 															/>
@@ -85,24 +110,23 @@ function Login() {
 														</div>
 
 														<div class="text-sm">
-															{/*<Link*/}
-															{/*	to="/register"*/}
-															{/*	class="font-medium hover:text-purple-800"*/}
-															{/*>*/}
+															<Link
+																to="/register"
+																class="font-medium hover:text-purple-800"
+															>
 																Create a new account
-															{/*</Link>*/}
+															</Link>
 														</div>
 													</div>
 
 													<div>
-														<Link to="/">
-															<button
-																type="submit"
-																class="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-800 focus:outline-none hover:bg-yellow-500"
-															>
-																Sign in
-															</button>
-														</Link>
+														<button
+															type="submit"
+															class="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-800 focus:outline-none hover:bg-yellow-500"
+															onClick={(e) => login(e)}
+														>
+															Sign in
+														</button>
 													</div>
 												</form>
 											</div>

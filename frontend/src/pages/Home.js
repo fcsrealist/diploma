@@ -1,8 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar.js';
 import Header from '../components/Header.js';
+import { authorizedAttendanceAPI } from '../Api/Requests';
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
+
+	const [courses, setCourses] = useState([]);
+	const history = useNavigate()
+
+	function isAuthorized() {
+		try {
+			if (!localStorage.getItem('token')){
+				history('/login')
+			}
+		} catch (error) {}
+	}
+
+	const loadCourses = async () => {
+		try {
+			const { data } = await authorizedAttendanceAPI.listCourses();
+			setCourses(data);
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		isAuthorized();
+		loadCourses();
+	}, []);
+
 	return (
 		<>
 			<Navbar />

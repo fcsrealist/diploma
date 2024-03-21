@@ -1,7 +1,33 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { authAPI } from '../Api/Requests'
+import {useNavigate} from "react-router-dom";
 
 function Register() {
+
+	const [email, setEmail] = useState('');
+	const [name, setName] = useState('');
+	const [password, setPassword] = useState('');
+	const history = useNavigate();
+
+	async function registerUser(e) {
+		e.preventDefault();
+		const body = {email, name, password};
+
+		if (email && name && password) {
+			try {
+				let { userData } = await authAPI.createUser(body);
+				let { token } = await authAPI.createToken(body)
+
+				localStorage.setItem('user', JSON.stringify(userData))
+				localStorage.setItem('token', token)
+				history('/')
+			} catch (error) {
+				alert('Email or Password is invalid');
+			}
+		} else {
+			alert("You should fill all the fields!")
+		}
+	}
 
 	return (
 		<>
@@ -43,7 +69,7 @@ function Register() {
 																type="email"
 																autocomplete="email"
 																required
-																// onChange={(e) => setEmail(e.target.value)}
+																onChange={(e) => setEmail(e.target.value)}
 																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm"
 															/>
 														</div>
@@ -58,10 +84,10 @@ function Register() {
 														<div class="mt-1">
 															<input
 																id="fname"
-																name="fname"
+																name="name"
 																type="text"
 																required
-																// onChange={(e) => setFullName(e.target.value)}
+																onChange={(e) => setName(e.target.value)}
 																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm"
 															/>
 														</div>
@@ -81,27 +107,7 @@ function Register() {
 																type="password"
 																autocomplete="current-password"
 																required
-																// onChange={(e) => setPassword(e.target.value)}
-																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-cyan-500 sm:text-sm"
-															/>
-														</div>
-													</div>
-
-													<div>
-														<label
-															for="password"
-															class="block text-sm font-medium text-gray-700"
-														>
-															Confirm Password
-														</label>
-														<div class="mt-1">
-															<input
-																id="password"
-																name="password"
-																type="password"
-																autocomplete="current-password"
-																required
-																// onChange={(e) => setConfirmPassword(e.target.value)}
+																onChange={(e) => setPassword(e.target.value)}
 																class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-cyan-500 sm:text-sm"
 															/>
 														</div>
@@ -125,15 +131,13 @@ function Register() {
 													</div>
 
 													<div>
-														<Link to="/">
-															<button
-																type="submit"
-																class="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-800 focus:outline-none hover:bg-yellow-500"
-																// onClick={(e) => registerUser(e)}
-															>
-																Sign up
-															</button>
-														</Link>
+														<button
+															type="submit"
+															class="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-800 focus:outline-none hover:bg-yellow-500"
+															onClick={(e) => registerUser(e)}
+														>
+															Sign up
+														</button>
 													</div>
 												</form>
 											</div>

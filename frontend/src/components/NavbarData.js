@@ -63,7 +63,7 @@ export const NavbarDataTeacher = [
 	},
 	{
 		title: 'Log Out',
-		path: '/',
+		path: '/login',
 		icon: (
 			<svg
 				class="w-5 h-5 inline-flex"
