@@ -12,5 +12,10 @@ router.register('courses', views.CourseViewSet)
 
 app_name = 'attendance'
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path(
+        "attendance/history",
+        views.AttendanceHistoryViewSet.as_view({'get': 'list'}),
+        name="attendance-history",
+    ),
 ]

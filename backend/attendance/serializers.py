@@ -3,11 +3,27 @@ from rest_framework import serializers
 
 from core.models import (
     Course,
-    Student
+    Student,
+    Attendance
 )
 
 
+class StudentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Student
+        fields = ('id', 'name', 'photo')
+
+
 class CourseSerializer(serializers.ModelSerializer):
+    students = StudentSerializer(many=True)
+
+    class Meta:
+        model = Course
+        fields = ['id', 'name', 'status', 'students']
+
+
+class CourseCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializers for the courses"""
     student_ids = serializers.ListField(
         child=serializers.IntegerField(),
@@ -43,3 +59,15 @@ class CourseSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class AttendanceCreateSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    student = StudentSerializer()
+
+    class Meta:
+        model = Attendance
+        fields = ("id", "status", "student", "created_at")
