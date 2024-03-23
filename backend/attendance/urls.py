@@ -18,4 +18,9 @@ urlpatterns = [
         views.AttendanceHistoryViewSet.as_view({'get': 'list'}),
         name="attendance-history",
     ),
+    path(
+        "students",
+        views.StudentsViewSet.as_view({'get': 'list'}),
+        name="students-list",
+    ),
 ]

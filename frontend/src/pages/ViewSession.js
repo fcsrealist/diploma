@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar.js';
 import Header from '../components/Header.js';
+import {Link, useNavigate} from 'react-router-dom';
 import { authorizedAttendanceAPI } from '../Api/Requests';
-import { useNavigate, Link } from 'react-router-dom'
+import { useParams } from "react-router-dom";
 
-function Home() {
+function ViewSessionClass(props) {
+	const params = useParams()
 
-	const [courses, setCourses] = useState([]);
-	const history = useNavigate()
+	// States
+	const [course, setCourse] = useState({});
+	const [courseHistory, setCourseHistory] = useState([]);
+	const history = useNavigate();
 
 	function isAuthorized() {
 		try {
@@ -17,11 +21,38 @@ function Home() {
 		} catch (error) {}
 	}
 
-	const loadCourses = async () => {
+	const loadCourse = async () => {
 		try {
-			const { data } = await authorizedAttendanceAPI.listCourses();
-			setCourses(data);
+			const { data } = await authorizedAttendanceAPI.retrieveCourse(params.id);
+			setCourse(data);
 			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const loadHistory = async () => {
+		try {
+			const { data } = await authorizedAttendanceAPI.retrieveCourseHistory(params.id);
+			const groupedData = data.reduce((acc, obj) => {
+				const date = obj.created_at;
+				if (!acc[date]) {
+					acc[date] = [];
+				}
+
+				if (!acc[date].some(item => item.student.id === obj.student.id)) {
+					acc[date].push(obj);
+				}
+				return acc;
+			}, {});
+
+			const result = Object.keys(groupedData).map(date => ({
+			  date,
+			  items: groupedData[date],
+			}));
+
+			setCourseHistory(result);
+			console.log(result)
 		} catch (error) {
 			console.log(error);
 		}
@@ -29,9 +60,9 @@ function Home() {
 
 	useEffect(() => {
 		isAuthorized();
-		loadCourses();
+		loadCourse();
+		loadHistory();
 	}, []);
-
 	return (
 		<>
 			<Navbar />
@@ -40,44 +71,35 @@ function Home() {
 				<div className="relative bg-gradient-to-r from-gray-800 to-purple-900 md:pt-32 pb-32 pt-12 rounded-2xl">
 					<div className="w-full pr-4 mb-16 max-w-full flex-grow flex-auto">
 						<span className="flex justify-center uppercase text-white mr-0 whitespace-no-wrap text-3xl font-bold px-0">
-							Current Classes
+							{course.name}
 						</span>
 						<span className="flex justify-center text-white mr-0 whitespace-no-wrap text-sm pt-2">
-							Current courses will be showed here
+							Current course history
 						</span>
 					</div>
 					<div className="flex flex-wrap px-2">
-						{courses.map((course, index) => (
+						{courseHistory.map((item, index) => (
 							<div className="w-full lg:w-6/12 xl:w-6/12 px-4 py-4" id="sampleId">
 								<div className="relative flex flex-col min-w-0 break-words bg-white rounded-lg mb-6 xl:mb-0 shadow-lg">
 									<div className="flex-auto p-4">
 										<div className="flex flex-wrap">
 											<div className="relative w-full pr-4 max-w-full flex-grow flex-1">
 												<h5 className="text-gray-800 uppercase font-bold text-lg">
-													{course.name}
+													{item.date}
 												</h5>
-												<span className="mt-4 text-sm text-grey-500">
-													{course.students.length} Students
-												</span>
-												<p className="mt-8">
-													{course.status === 2 ? (
-														<Link to={'/startsession/' + course.id}>
-															<button
-																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
-															>
-																Start Session
-															</button>
-														</Link>
-													) : (
-														<Link to={'/viewsession/' + course.id}>
-															<button
-																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
-															>
-																View Session
-															</button>
-														</Link>
-													)}
-												</p>
+												<ul>
+													{item.items.map((student, index) => (
+														student.status === 1 ? (
+															<li className="mt-4 text-sm text-grey-500">
+														 		{student.student.name} attended
+														 	</li>
+														) : (
+															<li className="mt-4 text-sm text-red-500">
+																{student.student.name} did not attended
+															</li>
+														)
+													))}
+												</ul>
 											</div>
 
 											<div className="relative w-auto pl-4 flex-initial">
@@ -109,4 +131,4 @@ function Home() {
 		</>
 	);
 }
-export default Home;
+export default ViewSessionClass;

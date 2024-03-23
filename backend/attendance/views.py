@@ -7,7 +7,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.models import Course, Attendance
+from core.models import Course, Attendance, Student
 from attendance import serializers
 from attendance.logic import FaceRecognitionUseCase
 
@@ -33,19 +33,22 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new course"""
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, status=Course.StatusType.ACTIVE)
 
     @action(methods=["post"], detail=True, url_path='mark-attendance')
     def mark_attendance(self, request, *args, **kwargs):
+        course = self.get_object()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         face_recognition_use_case = FaceRecognitionUseCase(
-            course=self.get_object(),
+            course=course,
             image=request.FILES['file']
         )
 
         face_recognition_use_case.execute()
+        course.status = Course.StatusType.ACTIVE
+        course.save()
 
         return Response(status=204)
 
@@ -53,7 +56,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 class AttendanceHistoryViewSet(viewsets.ModelViewSet):
     """View for manage course APIs"""
     serializer_class = serializers.AttendanceSerializer
-    queryset = Attendance.objects.all()
+    queryset = Attendance.objects.all().order_by("-id")
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -70,3 +73,10 @@ class AttendanceHistoryViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class StudentsViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.StudentSerializer

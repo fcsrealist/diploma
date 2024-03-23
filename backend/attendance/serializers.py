@@ -32,7 +32,7 @@ class CourseCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'status', 'student_ids']
+        fields = ['id', 'name', 'student_ids']
         read_only_fields = ['id']
 
     def _attach_students(self, students_ids, course):
@@ -67,6 +67,11 @@ class AttendanceCreateSerializer(serializers.Serializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     student = StudentSerializer()
+    created_at = serializers.SerializerMethodField()
+
+    def get_created_at(self, instance):
+        return instance.created_at.strftime("%Y-%m-%d")
+
 
     class Meta:
         model = Attendance

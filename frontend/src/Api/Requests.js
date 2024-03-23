@@ -43,6 +43,11 @@ export const authorizedAttendanceAPI = {
 			.get(`/attendance/courses/`)
 			.then((response) => response);
 	},
+	listStudents() {
+		return instance()
+			.get(`/attendance/students`)
+			.then((response) => response);
+	},
 	createCourse(body) {
 		return instance()
 			.post(`/attendance/courses/`, body)
@@ -53,14 +58,34 @@ export const authorizedAttendanceAPI = {
 			.put(`/attendance/courses/`, body)
 			.then((response) => response);
 	},
-	retrieveCourse(courseId, ) {
+	retrieveCourse(courseId) {
 		return instance()
-			.get(`/attendance/courses` + courseId)
+			.get(`/attendance/courses/` + courseId)
 			.then((response) => response);
 	},
-	deleteCourse(courseId, ) {
+	retrieveCourseHistory(courseId) {
 		return instance()
-			.delete(`/attendance/courses` + courseId)
+			.get(`/attendance/attendance/history`, { params: { course_id: courseId } })
+			.then((response) => response);
+	},
+	deleteCourse(courseId) {
+		return instance()
+			.delete(`/attendance/courses/` + courseId)
+			.then((response) => response);
+	},
+	startSession(courseId, file) {
+		let formData = new FormData();
+
+		formData.append('file', file);
+
+		const config = {
+			headers: {
+				'content-type': 'multipart/form-data',
+				Authorization: `Token ${localStorage.getItem('token')}`
+			}
+		}
+
+		axios.post(apiEndPoint + '/attendance/courses/' + courseId + '/mark-attendance/', formData, config)
 			.then((response) => response);
 	}
 }
