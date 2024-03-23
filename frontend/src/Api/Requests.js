@@ -85,7 +85,12 @@ export const authorizedAttendanceAPI = {
 			}
 		}
 
-		axios.post(apiEndPoint + '/attendance/courses/' + courseId + '/mark-attendance/', formData, config)
+		return axios.post(apiEndPoint + '/attendance/courses/' + courseId + '/mark-attendance/', formData, config)
 			.then((response) => response);
-	}
+	},
+	endSession(courseId) {
+		return instance()
+			.post('/attendance/courses/' + courseId + '/end-session/')
+			.then((response) => response);
+	},
 }

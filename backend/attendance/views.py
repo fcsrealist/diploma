@@ -33,7 +33,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new course"""
-        serializer.save(user=self.request.user, status=Course.StatusType.ACTIVE)
+        serializer.save(user=self.request.user, status=Course.StatusType.INACTIVE)
 
     @action(methods=["post"], detail=True, url_path='mark-attendance')
     def mark_attendance(self, request, *args, **kwargs):
@@ -48,6 +48,15 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         face_recognition_use_case.execute()
         course.status = Course.StatusType.ACTIVE
+        course.save()
+
+        return Response(status=204)
+
+    @action(methods=["post"], detail=True, url_path='end-session')
+    def end_session(self, request, *args, **kwargs):
+        course = self.get_object()
+
+        course.status = Course.StatusType.INACTIVE
         course.save()
 
         return Response(status=204)

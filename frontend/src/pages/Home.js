@@ -27,6 +27,15 @@ function Home() {
 		}
 	};
 
+	function handleEndSession(courseId) {
+		try {
+			authorizedAttendanceAPI.endSession(courseId);
+			window.location.reload();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
 	useEffect(() => {
 		isAuthorized();
 		loadCourses();
@@ -60,23 +69,31 @@ function Home() {
 													{course.students.length} Students
 												</span>
 												<p className="mt-8">
-													{course.status === 2 ? (
-														<Link to={'/startsession/' + course.id}>
-															<button
-																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
-															>
-																Start Session
-															</button>
-														</Link>
-													) : (
+													<div className="flex">
 														<Link to={'/viewsession/' + course.id}>
 															<button
-																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
+																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500 mr-1"
 															>
-																View Session
+																View History
 															</button>
 														</Link>
-													)}
+														{course.status === 2 ? (
+															<Link to={'/startsession/' + course.id}>
+																<button
+																	className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
+																>
+																	Start Session
+																</button>
+															</Link>
+														) : (
+															<button
+																className="bg-purple-800 text-white rounded p-2 font-bold text-base transition duration-300 hover:bg-yellow-500"
+																onClick={() => handleEndSession(course.id)}
+															>
+																End session
+															</button>
+														)}
+													</div>
 												</p>
 											</div>
 

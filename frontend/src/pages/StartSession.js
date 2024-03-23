@@ -40,13 +40,9 @@ function StartSessionClass(props) {
 	async function startSession(e) {
 		if (file){
 			e.preventDefault();
+			const { data } = await authorizedAttendanceAPI.startSession(params.id, file);
 
-			try {
-				await authorizedAttendanceAPI.startSession(params.id, file);
-				history('/');
-			} catch (error) {
-				console.log(error);
-			}
+			history('/')
 		}
 	}
 
