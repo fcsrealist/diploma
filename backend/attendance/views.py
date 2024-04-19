@@ -26,7 +26,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         """Return the serializer class for request"""
         if self.action == 'mark_attendance':
             return serializers.AttendanceCreateSerializer
-        elif self.action == 'create' or self.action == 'create':
+        elif self.action == 'create' or self.action == 'update':
             return serializers.CourseCreateUpdateSerializer
 
         return self.serializer_class

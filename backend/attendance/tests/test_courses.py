@@ -49,7 +49,6 @@ class PrivateCoursesAPITests(TestCase):
         """Test create course"""
         payload = {
             'name': 'Sample course name',
-            'status': Course.StatusType.ACTIVE,
             'student_ids': [create_student().id]
         }
         res = self.client.post(ATTENDANCE_URL, payload)
