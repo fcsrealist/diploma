@@ -32,6 +32,16 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'photo']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'face_encoding' in form.base_fields:
+            del form.base_fields['face_encoding']
+        return form
+
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Student, StudentAdmin)
 admin.site.register(models.Course)
-admin.site.register(models.Student)

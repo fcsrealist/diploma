@@ -3,6 +3,7 @@ Database models
 """
 import uuid
 import os
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
@@ -11,6 +12,7 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from django.utils import timezone
+from django.contrib.postgres.fields import ArrayField
 
 
 def student_image_file_path(instance, filename):
@@ -72,7 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Student(models.Model):
     """Student object"""
     name = models.CharField(max_length=255)
-    photo = models.ImageField(null=True, upload_to=student_image_file_path)
+    photo = models.ImageField(upload_to=student_image_file_path)
+    face_encoding = ArrayField(base_field=models.FloatField(), blank=True, null=True)
 
     def __str__(self):
         return self.name

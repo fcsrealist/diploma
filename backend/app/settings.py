@@ -101,7 +101,10 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST', 'db'),
         'NAME': os.environ.get('DB_NAME', 'attendance'),
         'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASS', '1234')
+        'PASSWORD': os.environ.get('DB_PASS', '1234'),
+        'TEST': {
+            'NAME': 'test_attendance',
+        }
     }
 }
 
